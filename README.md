@@ -1,8 +1,8 @@
 # paint-wannabe
 
-Aplikasi menggambar berbasis [Canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API).
+[Canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) based drawing app.
 
-### Contoh
+### Example
 <div align="center">
   <img width="90%" alt="punk-legend" src="https://user-images.githubusercontent.com/62506582/188454893-d18a6bc8-af06-4d20-b0e7-64597cae578c.png">
 
