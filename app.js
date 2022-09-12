@@ -1,32 +1,37 @@
 const canvas = document.getElementById('canvas')
 
-let lineWidth = document.getElementById('line-width')
-let strokeStyle = document.getElementById('stroke-style')
-let btnDownload = document.getElementById('btn-download')
-let btnUndo = document.getElementById('btn-undo')
-let btnClear = document.getElementById('btn-clear')
-let projectName = document.getElementById('project-name')
-
 const ctx = canvas.getContext('2d')
+
+const btnDownload = document.getElementById('btn-download')
+const btnUndo = document.getElementById('btn-undo')
+const btnClear = document.getElementById('btn-clear')
+
+const lineWidth = document.getElementById('line-width')
+const strokeStyle = document.getElementById('stroke-style')
+const projectName = document.getElementById('project-name')
 
 let isDrawing = false
 let arrayImage = []
 let arrayImageIndex = -1
 
-ctx.fillStyle = 'transparent'
 canvas.height = window.innerHeight - 180
-canvas.width = window.innerWidth - 30
+canvas.width = window.innerWidth - 40
+ctx.fillStyle = 'transparent'
+ctx.lineCap = 'round'
+ctx.lineJoin = 'round'
 
-function draw(e) {
-	if (!isDrawing) return;
+const draw = (e) => {
+	if (!isDrawing) return
 
-	if(lineWidth.value){
-		ctx.lineWidth = lineWidth.value
-	}else{
-		ctx.lineWidth = 1
+	switch(lineWidth.value >= 0){
+		case true:
+			ctx.lineWidth = lineWidth.value
+		break
+		default:
+			ctx.lineWidth = 1
+		break
 	}
-	ctx.lineCap = 'round'
-	ctx.lineJoin = 'round'
+
 	ctx.strokeStyle = strokeStyle.value
 
 	ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)
@@ -36,7 +41,7 @@ function draw(e) {
 	ctx.closePath()
 }
 
-function clearCanvas(){
+const clearCanvas = () => {
 	ctx.fillStyle = 'transparent'
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -45,7 +50,7 @@ function clearCanvas(){
 	arrayImageIndex = -1
 }
 
-function stopDraw(e){
+const stopDraw = (e) => {
 	isDrawing = false 
 	ctx.beginPath()
 
@@ -55,40 +60,44 @@ function stopDraw(e){
 	}
 }
 
-canvas.addEventListener('touchstart', draw)
-canvas.addEventListener('mousedown', draw)
-canvas.addEventListener('touchmove', draw)
-canvas.addEventListener('mousemove', draw)
-canvas.addEventListener('mouseup', stopDraw)
-canvas.addEventListener('mouseout', stopDraw)
-canvas.addEventListener('touchend', stopDraw)
-canvas.addEventListener('mouseup', stopDraw)
-canvas.addEventListener('mouseout', stopDraw)
-canvas.addEventListener('mousemove', draw)
-
-canvas.addEventListener('mousedown', (e) =>  {
+const setIsDrawingTrueAndDraw = (e) => {
 	isDrawing = true 
 	draw(e)
-})
+}
 
 btnDownload.addEventListener('click', () => {
-  	let image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-  	let el = document.createElement('a');
-  	let filename = projectName.value != '' ? projectName.value +'.png' : 'paint-wannabe.png';
+  	let image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream")
+  	let el = document.createElement('a')
+  	let filename = projectName.value != '' ? projectName.value +'.png' : 'paint-wannabe.png'
   	
-  	el.setAttribute('href', image);
-  	el.setAttribute('download', filename);
-  	el.click();
+  	el.setAttribute('href', image)
+  	el.setAttribute('download', filename)
+  	el.click()
 })
 
 btnUndo.addEventListener('click', () => {
-	if(arrayImageIndex <= 0){
-		clearCanvas()
-	}else{
-		arrayImageIndex -= 1
-		arrayImage.pop()
-		ctx.putImageData(arrayImage[arrayImageIndex], 0, 0)
+	switch(arrayImageIndex <= 0) {
+		case true:
+			clearCanvas()
+		break
+		default:
+			arrayImageIndex -= 1
+			arrayImage.pop()
+			ctx.putImageData(arrayImage[arrayImageIndex], 0, 0)
+		break
 	}
 })
 
 btnClear.addEventListener('click', clearCanvas)
+
+canvas.addEventListener('mousemove', draw)
+canvas.addEventListener('mouseup', stopDraw)
+canvas.addEventListener('mouseout', stopDraw)
+canvas.addEventListener('mouseout', stopDraw)
+canvas.addEventListener('mousemove', draw)
+canvas.addEventListener('mousedown', setIsDrawingTrueAndDraw)
+
+canvas.addEventListener('touchmove', draw)
+canvas.addEventListener('touchend', stopDraw)
+canvas.addEventListener('touchcancel', stopDraw)
+canvas.addEventListener('touchstart', setIsDrawingTrueAndDraw)
