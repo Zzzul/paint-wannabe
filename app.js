@@ -97,7 +97,15 @@ canvas.addEventListener('mouseout', stopDraw)
 canvas.addEventListener('mousemove', draw)
 canvas.addEventListener('mousedown', setIsDrawingTrueAndDraw)
 
-canvas.addEventListener('touchmove', draw)
-canvas.addEventListener('touchend', stopDraw)
-canvas.addEventListener('touchcancel', stopDraw)
-canvas.addEventListener('touchstart', setIsDrawingTrueAndDraw)
+canvas.addEventListener('touchstart', (e)=> {
+	setIsDrawingTrueAndDraw(e)
+})
+canvas.addEventListener('touchmove', (e) => {
+	setIsDrawingTrueAndDraw(e)
+})
+canvas.addEventListener('touchend', (e) => {
+	stopDraw(e)
+})
+canvas.addEventListener('touchcancel', (e) => {
+	stopDraw(e)
+})
