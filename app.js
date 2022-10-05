@@ -49,24 +49,19 @@ const drawing = (e) => {
 			ctx.lineWidth = 1
 		break
 	}
-
-	var coorpoint1 = arrayImage[0]
-	var coorpoint2 = arrayImage[1]
-	
 	ctx.strokeStyle = strokeStyle.value
-	ctx.beginPath()
-	ctx.moveTo(coorpoint1.x, coorpoint1.y)
-	for (var i = 1; i < arrayImage.length; i++) {
-		var midPoint = midPointBetween(coorpoint1, coorpoint2)
-		ctx.quadraticCurveTo(coorpoint1.x, coorpoint1.y, midPoint.x, midPoint.y)
-		coorpoint1 = arrayImage[i]
-		coorpoint2 = arrayImage[i+1]
-	}
+	var coor = getCoordinateXandY(e)
+	var lastCoor = arrayImage[arrayImage.length - 2]
+	var midCoor = midPointBetween(lastCoor, coor)
 
-	ctx.lineTo(coorpoint1.x, coorpoint1.y)
-	
+	ctx.quadraticCurveTo(lastCoor.x, lastCoor.y, midCoor.x, midCoor.y)
 	ctx.stroke()
-	// ctx.closePath()
+	ctx.beginPath()
+	ctx.moveTo(midCoor.x, midCoor.y)
+	
+
+	
+
 }
 
 const clearCanvas = () => {
