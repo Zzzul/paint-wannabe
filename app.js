@@ -14,7 +14,8 @@ let isDrawing = false
 let arrayImage = []
 let arrayImageIndex = -1
 
-canvas.height = window.innerHeight - 400
+canvas.height = window.innerHeight - 100
+
 canvas.width = window.innerWidth - 40
 ctx.fillStyle = 'transparent'
 ctx.lineCap = 'round'
