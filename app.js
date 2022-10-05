@@ -14,14 +14,33 @@ let isDrawing = false
 let arrayImage = []
 let arrayImageIndex = -1
 
-canvas.height = window.innerHeight - 180
+canvas.height = window.innerHeight - 100
+
 canvas.width = window.innerWidth - 40
 ctx.fillStyle = 'transparent'
 ctx.lineCap = 'round'
 ctx.lineJoin = 'round'
 
-const draw = (e) => {
+const midPointBetween = (p1, p2) => {
+	return {
+		x: p1.x + (p2.x - p1.x) / 2,
+		y: p1.y + (p2.y - p1.y) / 2
+	}
+}
+
+const getCoordinateXandY = (e) => {
+	var source = e.touches ? e.touches[0] : e
+
+	return {
+		x: source.clientX - canvas.offsetLeft,
+		y: source.clientY - canvas.offsetTop
+	}
+}
+
+const drawing = (e) => {
 	if (!isDrawing) return
+
+	arrayImage.push(getCoordinateXandY(e))
 
 	switch(lineWidth.value >= 0){
 		case true:
@@ -31,14 +50,19 @@ const draw = (e) => {
 			ctx.lineWidth = 1
 		break
 	}
-
 	ctx.strokeStyle = strokeStyle.value
+	var coor = getCoordinateXandY(e)
+	var lastCoor = arrayImage[arrayImage.length - 2]
+	var midCoor = midPointBetween(lastCoor, coor)
 
-	ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)
+	ctx.quadraticCurveTo(lastCoor.x, lastCoor.y, midCoor.x, midCoor.y)
 	ctx.stroke()
 	ctx.beginPath()
-	ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop)
-	ctx.closePath()
+	ctx.moveTo(midCoor.x, midCoor.y)
+	
+
+	
+
 }
 
 const clearCanvas = () => {
@@ -60,9 +84,10 @@ const stopDraw = (e) => {
 	}
 }
 
-const setIsDrawingTrueAndDraw = (e) => {
-	isDrawing = true 
-	draw(e)
+const startDraw = (e) => {
+	isDrawing = true
+	arrayImage.push(getCoordinateXandY(e))
+	// draw(e)
 }
 
 btnDownload.addEventListener('click', () => {
@@ -90,14 +115,13 @@ btnUndo.addEventListener('click', () => {
 
 btnClear.addEventListener('click', clearCanvas)
 
-canvas.addEventListener('mousemove', draw)
+canvas.addEventListener('mousemove', drawing)
 canvas.addEventListener('mouseup', stopDraw)
 canvas.addEventListener('mouseout', stopDraw)
 canvas.addEventListener('mouseout', stopDraw)
-canvas.addEventListener('mousemove', draw)
-canvas.addEventListener('mousedown', setIsDrawingTrueAndDraw)
+canvas.addEventListener('mousemove', drawing)
+canvas.addEventListener('mousedown', startDraw)
 
-canvas.addEventListener('touchmove', draw)
+canvas.addEventListener('touchstart', startDraw)
+canvas.addEventListener('touchmove', drawing)
 canvas.addEventListener('touchend', stopDraw)
-canvas.addEventListener('touchcancel', stopDraw)
-canvas.addEventListener('touchstart', setIsDrawingTrueAndDraw)
