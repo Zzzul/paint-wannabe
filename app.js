@@ -72,7 +72,7 @@ const clearCanvas = () => {
 }
 
 const undoLastDrawn = () => {
-	console.log(arrayImage)
+
 	switch(currentArrayIndex >= 2) {
 		case false:
 			clearCanvas()
@@ -84,7 +84,7 @@ const undoLastDrawn = () => {
 			ctx.putImageData(arrayImage[currentArrayIndex - 1][arrayImage[currentArrayIndex - 1].length - 1], 0, 0)
 		break
 	}
-	console.log(arrayImage)
+
 }
 
 const stopDraw = (e) => {
@@ -95,7 +95,7 @@ const stopDraw = (e) => {
 		arrayImage[currentArrayIndex].push(ctx.getImageData(0, 0, canvas.width, canvas.height))
 		currentArrayIndex += 1
 
-		console.log(arrayImage)
+	
 	}
 }
 
