@@ -12,7 +12,7 @@ const projectName = document.getElementById('project-name')
 
 let isDrawing = false
 let arrayImage = []
-let arrayImageIndex = -1
+let currentArrayIndex = 0
 
 canvas.height = window.innerHeight - 100
 
@@ -40,7 +40,7 @@ const getCoordinateXandY = (e) => {
 const drawing = (e) => {
 	if (!isDrawing) return
 
-	arrayImage.push(getCoordinateXandY(e))
+	arrayImage[currentArrayIndex].push(getCoordinateXandY(e))
 
 	switch(lineWidth.value >= 0){
 		case true:
@@ -52,17 +52,14 @@ const drawing = (e) => {
 	}
 	ctx.strokeStyle = strokeStyle.value
 	var coor = getCoordinateXandY(e)
-	var lastCoor = arrayImage[arrayImage.length - 2]
+	var lastCoor = arrayImage[currentArrayIndex][arrayImage[currentArrayIndex].length - 1]
+	console.log(lastCoor, coor)
 	var midCoor = midPointBetween(lastCoor, coor)
 
 	ctx.quadraticCurveTo(lastCoor.x, lastCoor.y, midCoor.x, midCoor.y)
 	ctx.stroke()
 	ctx.beginPath()
 	ctx.moveTo(midCoor.x, midCoor.y)
-	
-
-	
-
 }
 
 const clearCanvas = () => {
@@ -71,7 +68,23 @@ const clearCanvas = () => {
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 
 	arrayImage = []
-	arrayImageIndex = -1
+	currentArrayIndex = 0
+}
+
+const undoLastDrawn = () => {
+	console.log(arrayImage)
+	switch(currentArrayIndex >= 2) {
+		case false:
+			clearCanvas()
+		break
+		default:
+			ctx.putImageData(arrayImage[currentArrayIndex - 1][arrayImage[currentArrayIndex - 1].length - 1], 0, 0)
+			arrayImage.pop()
+			currentArrayIndex -= 1
+			ctx.putImageData(arrayImage[currentArrayIndex - 1][arrayImage[currentArrayIndex - 1].length - 1], 0, 0)
+		break
+	}
+	console.log(arrayImage)
 }
 
 const stopDraw = (e) => {
@@ -79,15 +92,18 @@ const stopDraw = (e) => {
 	ctx.beginPath()
 
 	if(e.type != 'mouseout'){
-		arrayImage.push(ctx.getImageData(0, 0, canvas.width, canvas.height))
-		arrayImageIndex += 1
+		arrayImage[currentArrayIndex].push(ctx.getImageData(0, 0, canvas.width, canvas.height))
+		currentArrayIndex += 1
+
+		console.log(arrayImage)
 	}
 }
 
 const startDraw = (e) => {
 	isDrawing = true
-	arrayImage.push(getCoordinateXandY(e))
-	// draw(e)
+	arrayImage.push('image' + currentArrayIndex)
+
+	arrayImage[currentArrayIndex] = []
 }
 
 btnDownload.addEventListener('click', () => {
@@ -100,18 +116,7 @@ btnDownload.addEventListener('click', () => {
   	el.click()
 })
 
-btnUndo.addEventListener('click', () => {
-	switch(arrayImageIndex <= 0) {
-		case true:
-			clearCanvas()
-		break
-		default:
-			arrayImageIndex -= 1
-			arrayImage.pop()
-			ctx.putImageData(arrayImage[arrayImageIndex], 0, 0)
-		break
-	}
-})
+btnUndo.addEventListener('click', undoLastDrawn)
 
 btnClear.addEventListener('click', clearCanvas)
 
